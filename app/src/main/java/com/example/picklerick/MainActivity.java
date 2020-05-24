@@ -2,8 +2,10 @@ package com.example.picklerick;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -18,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     TextView timeText;
     TextView scoreText;
+    TextView highText;
     int score;
     ImageView image;
     ImageView image2;
@@ -31,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView[] imageArray;
     Handler handler;
     Runnable runnable;
-
+    SharedPreferences sharedPreferences;
+    int highScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         timeText=findViewById(R.id.textView);
         scoreText=findViewById(R.id.textView2);
+        highText=findViewById(R.id.textView3);
         image=findViewById(R.id.imageView);
         image2=findViewById(R.id.imageView2);
         image3=findViewById(R.id.imageView3);
@@ -55,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
 
         hideImages();
         score=0;
+        sharedPreferences=this.getSharedPreferences("com.example.picklerick", Context.MODE_PRIVATE);
+
+
+
         new CountDownTimer(10000,1000){
 
             @Override
@@ -95,10 +104,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
 
+        highScore= sharedPreferences.getInt("highScore",0);
+        highText.setText("High Score: "+highScore);
+
+
+
+
+
+
     }
     public void increaseScore(View view){
         score++;
         scoreText.setText("Score: "+score);
+        if(score>highScore)
+            highScore=score;
+        sharedPreferences.edit().putInt("highScore",highScore).apply();
     }
     public void hideImages(){
         handler =new Handler();
@@ -117,4 +137,5 @@ public class MainActivity extends AppCompatActivity {
         };
         handler.post(runnable);
     }
+
 }
